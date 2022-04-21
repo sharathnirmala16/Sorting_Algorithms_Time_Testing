@@ -12,6 +12,7 @@ using namespace std;
 //Class Prototypes
 class MergeSort;
 class RankedSort;
+class BubbleSort;
 
 //Function Prototypes
 void TestSortingAlgorithms(vector<int> arr);
@@ -28,17 +29,22 @@ int main()
 	
 	vector<int> unsortedArr;
 	
-	if (opt == 1) unsortedArr = InputArr();
+	if (opt == 1)
+	{
+		unsortedArr = InputArr();
+	}
+
 	else
 	{
 		int arraySize;
 		cout << "Enter the size of the array to be generated: ";
 		cin >> arraySize;
 		unsortedArr = RandomArr(arraySize);
+		
 	}
-	
+
 	TestSortingAlgorithms(unsortedArr);
-	PrintArr(unsortedArr, "Unsorted Array:\n");
+	//PrintArr(unsortedArr, "Unsorted Array:\n");
 
 	return 0;
 }
@@ -57,6 +63,14 @@ public:
 	vector<int> GetArr()
 	{
 		return arr;
+	}
+
+	void PrintArr(string start, string end)
+	{
+		int n = arr.size();
+		cout << start;
+		forl(i, 0, n) cout << arr[i] << " ";
+		cout << end;
 	}
 
 	void Merge(int low, int mid, int high)
@@ -114,6 +128,7 @@ public:
 	}
 };
 
+//Ranked Sort Algorithm
 class RankedSort
 {
 private:
@@ -149,6 +164,35 @@ public:
 		}
 
 		arr = sortedArr;
+	}
+};
+
+//Bubble Sort Algorithm
+class BubbleSort
+{
+private:
+	vector<int> arr;
+public:
+	void SetUnsortedArr(vector<int> unsortedArr)
+	{
+		arr = unsortedArr;
+	}
+
+	vector<int> GetArr()
+	{
+		return arr;
+	}
+
+	void Sort()
+	{
+		int n = arr.size();
+		forl(i, 0, n - 1)
+		{
+			forl(j, 0, n - i - 1)
+			{
+				if (arr[j] > arr[j + 1]) swap(arr[j], arr[j + 1]);
+			}
+		}
 	}
 };
 
@@ -211,6 +255,17 @@ void TestSortingAlgorithms(vector<int> arr)
 
 	timeTaken = t2 - t1;
 	table[timeTaken.count()] = "Ranked Sort";
+
+	//Testing BubbleSort
+	BubbleSort bubbleSort;
+	bubbleSort.SetUnsortedArr(arr);
+
+	t1 = high_resolution_clock::now();
+	bubbleSort.Sort();
+	t2 = high_resolution_clock::now();
+
+	timeTaken = t2 - t1;
+	table[timeTaken.count()] = "Bubble Sort";
 
 	//Testing std::sort()
 	vector<int> unsortedArr = arr;

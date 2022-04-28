@@ -13,10 +13,13 @@ using namespace std;
 class MergeSort;
 class RankedSort;
 class BubbleSort;
+class SelectionSort;
+class InsertionSort;
+class QuickSort;
 
 //Function Prototypes
-void TestSortingAlgorithms(vector<int> arr);
-void PrintArr(vector<int> arr, string start = "ARRAY: ", string end = newl);
+void TestSortingAlgorithms(vector<int> arr, bool trace = false);
+void PrintArr(vector<int> arr, string start = "ARRAY: ", string end = newl, string separator = " ");
 void PrintTestResults(map<double, string> table);
 vector<int> RandomArr(int n);
 vector<int> InputArr();
@@ -40,11 +43,12 @@ int main()
 		cout << "Enter the size of the array to be generated: ";
 		cin >> arraySize;
 		unsortedArr = RandomArr(arraySize);
-		
 	}
 
-	TestSortingAlgorithms(unsortedArr);
-	//PrintArr(unsortedArr, "Unsorted Array:\n");
+	bool trace;
+	cout << "Do you want the tracing output (Yes: 1/ No: 0)?: ";
+	cin >> trace;
+	TestSortingAlgorithms(unsortedArr, trace);
 
 	return 0;
 }
@@ -63,14 +67,6 @@ public:
 	vector<int> GetArr()
 	{
 		return arr;
-	}
-
-	void PrintArr(string start, string end)
-	{
-		int n = arr.size();
-		cout << start;
-		forl(i, 0, n) cout << arr[i] << " ";
-		cout << end;
 	}
 
 	void Merge(int low, int mid, int high)
@@ -115,13 +111,23 @@ public:
 		}
 	}
 
-	void Sort(int low, int high)
+	void Sort(int low, int high, bool trace)
 	{
-		if (low < high)
+		if (low < high && trace == true)
 		{
 			int mid = low + (high - low) / 2;
-			Sort(low, mid);
-			Sort(mid + 1, high);
+			Sort(low, mid, trace);
+			Sort(mid + 1, high, trace);
+
+			Merge(low, mid, high);
+			PrintArr(arr, "Array: ");
+		}
+
+		if (low < high && trace == false)
+		{
+			int mid = low + (high - low) / 2;
+			Sort(low, mid, trace);
+			Sort(mid + 1, high, trace);
 
 			Merge(low, mid, high);
 		}
@@ -144,26 +150,54 @@ public:
 		return arr;
 	}
 
-	void Sort()
+	void Sort(bool trace)
 	{
-		int n = arr.size();
-		vector<int> ranks(n, 0);
-		vector<int> sortedArr(n);
-		forl(i, 1, n)
+		if (trace)
 		{
-			for (int j = i - 1; j >= 0; j--)
+			cout << "Tracing Ranked Sort:\n";
+			int n = arr.size();
+			vector<int> ranks(n, 0);
+			vector<int> sortedArr(n);
+			forl(i, 1, n)
 			{
-				if (arr[i] >= arr[j]) ranks[i]++;
-				else ranks[j]++;
+				for (int j = i - 1; j >= 0; j--)
+				{
+					if (arr[i] >= arr[j]) ranks[i]++;
+					else ranks[j]++;
+				}
+				PrintArr(arr, "Array: ");
+				PrintArr(ranks, "Ranks: ");
 			}
+
+			forl(i, 0, n)
+			{
+				sortedArr[ranks[i]] = arr[i];
+			}
+
+			arr = sortedArr;
 		}
 
-		forl(i, 0, n)
+		else
 		{
-			sortedArr[ranks[i]] = arr[i];
-		}
+			int n = arr.size();
+			vector<int> ranks(n, 0);
+			vector<int> sortedArr(n);
+			forl(i, 1, n)
+			{
+				for (int j = i - 1; j >= 0; j--)
+				{
+					if (arr[i] >= arr[j]) ranks[i]++;
+					else ranks[j]++;
+				}
+			}
 
-		arr = sortedArr;
+			forl(i, 0, n)
+			{
+				sortedArr[ranks[i]] = arr[i];
+			}
+
+			arr = sortedArr;
+		}
 	}
 };
 
@@ -183,15 +217,189 @@ public:
 		return arr;
 	}
 
-	void Sort()
+	void Sort(bool trace)
 	{
-		int n = arr.size();
-		forl(i, 0, n - 1)
+		if (trace)
 		{
-			forl(j, 0, n - i - 1)
+			cout << "Tracing Bubble Sort:\n";
+			int n = arr.size();
+			forl(i, 0, n - 1)
 			{
-				if (arr[j] > arr[j + 1]) swap(arr[j], arr[j + 1]);
+				forl(j, 0, n - i - 1)
+				{
+					if (arr[j] > arr[j + 1]) swap(arr[j], arr[j + 1]);
+				}
+				PrintArr(arr, "Array: ");
 			}
+		}
+
+		else
+		{
+			int n = arr.size();
+			forl(i, 0, n - 1)
+			{
+				forl(j, 0, n - i - 1)
+				{
+					if (arr[j] > arr[j + 1]) swap(arr[j], arr[j + 1]);
+				}
+			}
+		}
+	}
+};
+
+class SelectionSort
+{
+private:
+	vector<int> arr;
+public:
+	void SetUnsortedArr(vector<int> unsortedArr)
+	{
+		arr = unsortedArr;
+	}
+
+	vector<int> GetArr()
+	{
+		return arr;
+	}
+
+	void Sort(bool trace)
+	{
+		if (trace)
+		{
+			cout << "Tracing Selection Sort:\n";
+			int n = arr.size();
+			forl(step, 0, n - 1)
+			{
+				int minIndex = step;
+				forl(i, step + 1, n)
+				{
+					if (arr[i] < arr[minIndex]) minIndex = i;
+				}
+				swap(arr[minIndex], arr[step]);
+				PrintArr(arr, "Array: ");
+			}
+		}
+
+		else
+		{
+			int n = arr.size();
+			forl(step, 0, n - 1)
+			{
+				int minIndex = step;
+				forl(i, step + 1, n)
+				{
+					if (arr[i] < arr[minIndex]) minIndex = i;
+				}
+				swap(arr[minIndex], arr[step]);
+			}
+		}
+	}
+};
+
+class InsertionSort
+{
+private:
+	vector<int> arr;
+public:
+	void SetUnsortedArr(vector<int> unsortedArr)
+	{
+		arr = unsortedArr;
+	}
+
+	vector<int> GetArr()
+	{
+		return arr;
+	}
+
+	void Sort(bool trace)
+	{
+		if (trace)
+		{
+			cout << "Tracing Insertion Sort:\n";
+			int key, j, n = arr.size();
+			forl(i, 1, n)
+			{
+				key = arr[i];
+				j = i - 1;
+
+				while (j >= 0 && arr[j] > key)
+				{
+					arr[j + 1] = arr[j];
+					j = j - 1;
+				}
+				arr[j + 1] = key;
+				PrintArr(arr, "Array: ");
+			}
+		}
+
+		else
+		{
+			int key, j, n = arr.size();
+			forl(i, 1, n)
+			{
+				key = arr[i];
+				j = i - 1;
+
+				while (j >= 0 && arr[j] > key)
+				{
+					arr[j + 1] = arr[j];
+					j = j - 1;
+				}
+				arr[j + 1] = key;
+			}
+		}
+	}
+};
+
+class QuickSort
+{
+private:
+	vector<int> arr;
+public:
+	void SetUnsortedArr(vector<int> unsortedArr)
+	{
+		arr = unsortedArr;
+	}
+
+	vector<int> GetArr()
+	{
+		return arr;
+	}
+
+	int partition(int low, int high)
+	{
+		int pivot = arr[high];
+		int i = low - 1;
+		
+		forl(j, low, high - 1)
+		{
+			if (arr[j] < pivot)
+			{
+				i++;
+				swap(arr[i], arr[j]);
+			}
+		}
+		swap(arr[i + 1], arr[high]);
+		return ++i;
+	}
+
+	void Sort(int low, int high, bool trace)
+	{
+		if (low < high && trace == true)
+		{
+			int pi = partition(low, high);
+
+			Sort(low, pi - 1, trace);
+			Sort(pi + 1, high, trace);
+			PrintArr(arr, "Array: ");
+		}
+
+		if (low < high && trace == false)
+		{
+			int pi = partition(low, high);
+
+			Sort(low, pi - 1, trace);
+			Sort(pi + 1, high, trace);
 		}
 	}
 };
@@ -208,11 +416,11 @@ vector<int> InputArr()
 	return arr;
 }
 
-void PrintArr(vector<int> arr, string start, string end)
+void PrintArr(vector<int> arr, string start, string end, string separator)
 {
 	int n = arr.size();
 	cout << start;
-	forl(i, 0, n) cout << arr[i] << " ";
+	forl(i, 0, n) cout << arr[i] << separator;
 	cout << end;
 }
 
@@ -224,7 +432,7 @@ vector<int> RandomArr(int n)
 	return arr;
 }
 
-void TestSortingAlgorithms(vector<int> arr)
+void TestSortingAlgorithms(vector<int> arr, bool trace)
 {
 	using chrono::high_resolution_clock;
 	using chrono::duration_cast;
@@ -235,11 +443,12 @@ void TestSortingAlgorithms(vector<int> arr)
 	int low = 0, high = arr.size() - 1;
 
 	//Testing MergeSort
+	if (trace) cout << "Tracing Merge Sort:\n";
 	MergeSort mergeSort;
 	mergeSort.SetUnsortedArr(arr);
 
 	auto t1 = high_resolution_clock::now();
-	mergeSort.Sort(low, high);
+	mergeSort.Sort(low, high, trace);
 	auto t2 = high_resolution_clock::now();
 
 	duration<double, milli> timeTaken = t2 - t1;
@@ -250,7 +459,7 @@ void TestSortingAlgorithms(vector<int> arr)
 	rankedSort.SetUnsortedArr(arr);
 
 	t1 = high_resolution_clock::now();
-	rankedSort.Sort();
+	rankedSort.Sort(trace);
 	t2 = high_resolution_clock::now();
 
 	timeTaken = t2 - t1;
@@ -261,11 +470,45 @@ void TestSortingAlgorithms(vector<int> arr)
 	bubbleSort.SetUnsortedArr(arr);
 
 	t1 = high_resolution_clock::now();
-	bubbleSort.Sort();
+	bubbleSort.Sort(trace);
 	t2 = high_resolution_clock::now();
 
 	timeTaken = t2 - t1;
 	table[timeTaken.count()] = "Bubble Sort";
+
+	//Testing InsertionSort
+	InsertionSort insertionSort;
+	insertionSort.SetUnsortedArr(arr);
+
+	t1 = high_resolution_clock::now();
+	insertionSort.Sort(trace);
+	t2 = high_resolution_clock::now();
+
+	timeTaken = t2 - t1;
+	table[timeTaken.count()] = "Insertion Sort";
+
+	//Testing SelectionSort
+	SelectionSort selectionSort;
+	selectionSort.SetUnsortedArr(arr);
+
+	t1 = high_resolution_clock::now();
+	selectionSort.Sort(trace);
+	t2 = high_resolution_clock::now();
+
+	timeTaken = t2 - t1;
+	table[timeTaken.count()] = "Selection Sort";
+
+	//Testing QuickSort
+	if (trace) cout << "Tracing Quick Sort:\n";
+	QuickSort quickSort;
+	quickSort.SetUnsortedArr(arr);
+
+	t1 = high_resolution_clock::now();
+	quickSort.Sort(low, high, trace);
+	t2 = high_resolution_clock::now();
+
+	timeTaken = t2 - t1;
+	table[timeTaken.count()] = "Quick Sort";
 
 	//Testing std::sort()
 	vector<int> unsortedArr = arr;

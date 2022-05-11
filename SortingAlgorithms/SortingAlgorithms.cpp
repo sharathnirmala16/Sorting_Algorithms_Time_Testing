@@ -370,17 +370,13 @@ public:
 	{
 		int pivot = arr[high];
 		int i = low - 1;
-		
-		forl(j, low, high - 1)
+
+		forl(j, low, high)
 		{
-			if (arr[j] < pivot)
-			{
-				i++;
-				swap(arr[i], arr[j]);
-			}
+			if (arr[j] <= pivot) swap(arr[++i], arr[j]);
 		}
-		swap(arr[i + 1], arr[high]);
-		return ++i;
+		swap(arr[++i], arr[high]);
+		return i;
 	}
 
 	void Sort(int low, int high, bool trace)
@@ -506,6 +502,8 @@ void TestSortingAlgorithms(vector<int> arr, bool trace)
 	t1 = high_resolution_clock::now();
 	quickSort.Sort(low, high, trace);
 	t2 = high_resolution_clock::now();
+	//vector<int> tarr = quickSort.GetArr();
+	//PrintArr(tarr, "Sorted Array: ");
 
 	timeTaken = t2 - t1;
 	table[timeTaken.count()] = "Quick Sort";
